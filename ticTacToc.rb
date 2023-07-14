@@ -35,7 +35,6 @@ class Game
     #Check for playable square
     def playable?
         return true if board.any? {|element| element.is_a?(Numeric)}
-        end
     end
 
     #Check for winner
@@ -70,43 +69,47 @@ class Game
     end
 
     #Display the basic, empty board and prompt player to choose
-    def play
+    def start_game
         setup
         loop do
-            turn = true
-            #Alter board
-            #Switch player and repeat prompt and alter board scenario
-            if (turn)
-                puts "#{@player_one.name}, please choose where to play."
-                move = gets.chomp
-                @board.update_board(move, @player_one.symbol)
-                turn = false
-            else
-                puts "#{@player_two.get_name}, please choose where to play."
-                move = gets.chomp
-                @board.update_board(move, @player_two.symbol)
-                turn = true
+            make_move
+            if check_win_conditions
+                puts "Congratulations! You win!"
+                break
             end
-            #Check if winner and not full
-            #If winner, congratulate
-            if (turn)
-                if @board.winner?(@player_one.get_symbol)
-                    puts "Congratulations #{@player_one}!"
-                    break
-                elsif @board.winner?(@player_two.get_symbol)
-                    puts "Congratulations #{@player_one}!"
-                    break
-                #If no playable square, declare draw
-                elsif @board.playable?
-                    puts "It's a tie! Try again next time."
-                    break
-                end
+            if !playable?
+                puts "It's a tie! Try again next time."
+                break
             end
+            #prompt for next game and reset?
         end
     end
-    def start_game
-    
+
+    def make_move
+        turn = true
+        #Alter board
+        #Switch player and repeat prompt and alter board scenario
+        if (turn)
+            puts "#{@player_one.name}, please choose where to play."
+            move = gets.chomp
+            @board.update_board(move, @player_one.symbol)
+            turn = false
+        else
+            puts "#{@player_two.get_name}, please choose where to play."
+            move = gets.chomp
+            @board.update_board(move, @player_two.symbol)
+            turn = true
+        end
     end
+
+    def check_win_conditions
+        if @board.winner?(@player_one.get_symbol)
+            puts "Congratulations #{@player_one}!"
+        elsif @board.winner?(@player_two.get_symbol)
+            puts "Congratulations #{@player_one}!"
+        end
+    end
+
 end
 
 #Class for players
@@ -130,4 +133,4 @@ end
 newBoard = Board.new()
 newBoard.display_board()
 newGame = Game.new()
-newGame.play
+newGame.start_game
