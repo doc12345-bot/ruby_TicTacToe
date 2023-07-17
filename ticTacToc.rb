@@ -14,7 +14,7 @@ class Board
     end
 
     def update_board(location, symbol)
-        if legal_move?(location - 1)
+        if legal_move?(location)
             @board[location-1] = symbol
             display_board
         else
@@ -31,7 +31,12 @@ end
 
 #Class for game
 class Game
-    attr_accessor :player_one, :player_two, :board
+    attr_accessor :player_one, :player_two, :board, :newBoard
+
+    def initialize
+        @newBoard = Board.new
+    end
+
     #Check for playable square
     def playable?
         return true if board.any? {|element| element.is_a?(Numeric)}
@@ -57,12 +62,14 @@ class Game
 
             #Assign names and markers to players
             puts "Player one, what's your name?"
-            player_one = Player.new(gets.chomp, "X")
+            @player_one = Player.new(gets.chomp, "X")
+
+            #@player_one.name = gets.chomp
             @@number_of_players += 1
             puts "Hello, #{player_one.name}, you will play as X."
 
             puts "Player two, what's your name?"
-            player_two = Player.new(gets.chomp, "O")
+            @player_two = Player.new(gets.chomp, "O")
             @@number_of_players += 1
             puts "Hello, #{player_two.name}, you will play as O."            
         end
@@ -92,20 +99,24 @@ class Game
         if (turn)
             puts "#{@player_one.name}, please choose where to play."
             move = gets.chomp
-            @board.update_board(move, @player_one.symbol)
+            while !move.match?(/^\d+$/)
+                puts "#{@player_one.name}, please choose a valid place to play."
+                move = gets.chomp
+            end
+            @newBoard.update_board(move.to_i, @player_one.symbol)
             turn = false
         else
-            puts "#{@player_two.get_name}, please choose where to play."
+            puts "#{@player_two.name}, please choose where to play."
             move = gets.chomp
-            @board.update_board(move, @player_two.symbol)
+            @newBoard.update_board(move, @player_two.symbol)
             turn = true
         end
     end
 
     def check_win_conditions
-        if @board.winner?(@player_one.get_symbol)
+        if @newBoard.winner?(@player_one.symbol)
             puts "Congratulations #{@player_one}!"
-        elsif @board.winner?(@player_two.get_symbol)
+        elsif @newBoard.winner?(@player_two.symbol)
             puts "Congratulations #{@player_one}!"
         end
     end
@@ -115,18 +126,10 @@ end
 #Class for players
 class Player 
     attr_accessor :name, :symbol
+
     def initialize(name, symbol)
-        #puts "Player #{@@number_of_players +1}, what's your name?"
         @name = name
         @symbol = symbol
-    end
-
-    def name
-        @name
-    end
-
-    def symbol
-        @symbol
     end
 end
 
