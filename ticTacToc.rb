@@ -7,6 +7,7 @@ class Board
         @board = Array.new(9) { |n| n+1}
     end
 
+    #Print the board
     def display_board
         puts "\n
         #{@board[0]}|#{@board[1]}|#{@board[2]}
@@ -16,41 +17,31 @@ class Board
         #{@board[6]}|#{@board[7]}|#{@board[8]}"
     end
 
+    #Make a move
     def update_board(location, symbol)
-        #if legal_move?(location)
-            @board[location-1] = symbol
-            display_board
-        #else
-        #    puts "That square is already taken! Try again."
-        #    location = gets.chomp
-        #    @board.update_board(location, symbol)
-        #end
+        @board[location-1] = symbol
+        display_board
     end
 
-    #def legal_move?(location)
-     #   return true if @board[location-1].is_a?(Numeric)
-    #end
-
+    #Check for winner
     def winner?(symbol, currentBoard)
 
         winner = Array.new(9){Array.new(8)}
         winner = [[0,1,2],[0,3,6],[0,4,8],[1,4,7],[2,4,6],[2,5,8],[3,4,5],[6,7,8]]
 
-        length = winner.length
-        x = 0
-        while x < length
-            y = 0
-            while y < 3
-                puts winner[x][y]
-                puts "This is the #{board[x][y]}"
-                y +=1
+        #Outside loop goes through the first array of winner
+        winner.each do |combination|
+            #internal loop goes through nested hash, making arr with the corresponding position on the board
+            arr = combination.map do |position|
+                @board[position]
             end
-            position = winner[x]
-            puts position
-            puts board[].values_at(position)
-            currentBoard.values_at(winner[x]).all? {|sym| sym == symbol}
-            x += 1
-        end 
+            #Check if arr is all one symbol.
+            if arr.all? {|sym| sym == symbol}
+                puts "Working"
+                return true
+            end
+            puts "No match"
+        end
     end
 end
 
@@ -64,11 +55,8 @@ class Game
 
     #Check for playable square
     def playable?
-        return true if board.any? {|element| element.is_a?(Numeric)}
+        return true if @newBoard.any? {|element| element.is_a?(Numeric)}
     end
-
-    #Check for winner
-    
 
     def setup 
         @@number_of_players = 0
@@ -117,7 +105,7 @@ class Game
         if (turn)
             puts "#{@player_one.name}, please choose where to play."
             move = gets.chomp
-            while (!move.match?(/^\d+$/) || move.to_i > 10)
+            while (!move.match?(/^\d+$/) || move.to_i > 9)
                 puts "#{@player_one.name}, please choose a valid place to play."
                 move = gets.chomp
                 puts "\n"
@@ -135,9 +123,9 @@ class Game
 
     def check_win_conditions
         if @newBoard.winner?(@player_one.symbol, @newBoard)
-            puts "Congratulations #{@player_one}!"
+            puts "Congratulations #{@player_one.name}!"
         elsif @newBoard.winner?(@player_two.symbol, @newBoard)
-            puts "Congratulations #{@player_one}!"
+            puts "Congratulations #{@player_one.name}!"
         end
     end
 
