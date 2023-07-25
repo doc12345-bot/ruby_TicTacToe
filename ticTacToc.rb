@@ -43,10 +43,17 @@ class Board
             puts "No match"
         end
     end
+
+    def full?
+        @board.any? {|tile| tile = /^\d+$/}
+    end
 end
 
 #Class for game
 class Game
+    @@turn = true
+    @@game_over = false
+
     attr_accessor :player_one, :player_two, :board, :newBoard
 
     def initialize
@@ -55,7 +62,7 @@ class Game
 
     #Check for playable square
     def playable?
-        return true if @newBoard.any? {|element| element.is_a?(Numeric)}
+        @newBoard.full?
     end
 
     def setup 
@@ -84,14 +91,16 @@ class Game
     #Display the basic, empty board and prompt player to choose
     def start_game
         setup
-        loop do
+        until @@game_over == true do
             make_move
             if check_win_conditions
                 puts "Congratulations! You win!"
+                @@game_over == true
                 break
             end
             if !playable?
                 puts "It's a tie! Try again next time."
+                @@game_over == true
                 break
             end
             #prompt for next game and reset?
@@ -99,10 +108,9 @@ class Game
     end
 
     def make_move
-        turn = true
         #Alter board
         #Switch player and repeat prompt and alter board scenario
-        if (turn)
+        if (@@turn)
             puts "#{@player_one.name}, please choose where to play."
             move = gets.chomp
             while (!move.match?(/^\d+$/) || move.to_i > 9)
@@ -111,13 +119,15 @@ class Game
                 puts "\n"
             end
             @newBoard.update_board(move.to_i, @player_one.symbol)
-            turn = false
+            @@turn = false
+            puts "Turn has changed!"
         else
             puts "#{@player_two.name}, please choose where to play."
             move = gets.chomp
             puts "\n"
-            @newBoard.update_board(move, @player_two.symbol)
-            turn = true
+            @newBoard.update_board(move.to_i, @player_two.symbol)
+            @@turn = true
+            puts "Turn has changed again!"
         end
     end
 
