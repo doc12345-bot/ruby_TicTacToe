@@ -23,6 +23,13 @@ class Board
         display_board
     end
 
+    def taken?(location)
+        if @board[location-1] == "X" || "O"
+            return true
+        end
+        return false
+    end
+
     #Check for winner
     def winner?(symbol, currentBoard)
 
@@ -37,11 +44,12 @@ class Board
             end
             #Check if arr is all one symbol.
             if arr.all? {|sym| sym == symbol}
-                puts "Working"
+                #puts "Working"
                 return true
             end
-            puts "No match"
+            #puts "No match"
         end
+        return false
     end
 
     def full?
@@ -65,6 +73,7 @@ class Game
         @newBoard.full?
     end
 
+    #Sets game up, gets usernames etc.
     def setup 
         @@number_of_players = 0
         while @@number_of_players < 1 do
@@ -88,7 +97,7 @@ class Game
         end
     end
 
-    #Display the basic, empty board and prompt player to choose
+    #Display the basic, empty board and prompt player to play
     def start_game
         setup
         until @@game_over == true do
@@ -113,29 +122,42 @@ class Game
         if (@@turn)
             puts "#{@player_one.name}, please choose where to play."
             move = gets.chomp
+            #Check move is a number and between 1 and 9.
             while (!move.match?(/^\d+$/) || move.to_i > 9)
                 puts "#{@player_one.name}, please choose a valid place to play."
                 move = gets.chomp
                 puts "\n"
             end
+            #Needs to check if space is already occupied.
+            ##DOES NOT WORK ATM####
+
+            puts "This is the move: #{move.to_i}"
+            while @newBoard.taken?(move.to_i)
+                puts "This one!"
+                puts "#{@player_one.name}, please choose a valid place to play."
+                move = gets.chomp
+                puts "\n"
+            end
+
+            
             @newBoard.update_board(move.to_i, @player_one.symbol)
             @@turn = false
-            puts "Turn has changed!"
         else
             puts "#{@player_two.name}, please choose where to play."
             move = gets.chomp
             puts "\n"
             @newBoard.update_board(move.to_i, @player_two.symbol)
             @@turn = true
-            puts "Turn has changed again!"
         end
     end
 
     def check_win_conditions
         if @newBoard.winner?(@player_one.symbol, @newBoard)
             puts "Congratulations #{@player_one.name}!"
+            return true
         elsif @newBoard.winner?(@player_two.symbol, @newBoard)
             puts "Congratulations #{@player_one.name}!"
+            return true
         end
     end
 
