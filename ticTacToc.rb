@@ -3,8 +3,10 @@ class Board
 
     attr_accessor :board
 
+    #Idea is to initialize an array and then populate it with taken tiles.
     def initialize
-        @board = Array.new(9) { |n| n+1}
+        @board = Array.new(9) { |n| n + 1 }
+        @taken = Array.new(0)
     end
 
     #Print the board
@@ -20,14 +22,24 @@ class Board
     #Make a move
     def update_board(location, symbol)
         @board[location-1] = symbol
+        @taken.push(location-1)
+        puts @taken
         display_board
+    end
+
+    def valid_move?(number)
+        @taken.any?(number)
+    end
+
+    def print_location(location)
+        @board[location-1]
     end
 
     def taken?(location)
         if @board[location-1] == "X" || "O"
-            return true
+            return false
         end
-        return false
+        return true
     end
 
     #Check for winner
@@ -128,11 +140,15 @@ class Game
                 move = gets.chomp
                 puts "\n"
             end
+
             #Needs to check if space is already occupied.
             ##DOES NOT WORK ATM####
 
-            puts "This is the move: #{move.to_i}"
-            while @newBoard.taken?(move.to_i)
+            puts "This is the current tile #{@newBoard.print_location(move.to_i)}"
+            puts @newBoard.display_board
+            puts "This is in the game class"
+
+            while @newBoard.valid_move?(move.to_i)
                 puts "This one!"
                 puts "#{@player_one.name}, please choose a valid place to play."
                 move = gets.chomp
