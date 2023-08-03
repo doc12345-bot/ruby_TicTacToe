@@ -107,16 +107,7 @@ class Game
             end
         end
         
-        #prompt for next game and reset
-        #Does not work correctly. Restarts the game but on the same board.
-        puts "Would you like to play again?"
-        answer = gets.chomp
-        if answer.downcase == "y"
-            puts "Ok, let's play again!"
-            start_game
-        else
-            puts "Thanks for playing!"
-        end
+        puts "Thanks for playing!"
     end
 
     def make_move
@@ -183,6 +174,7 @@ class Player
         @symbol = symbol
     end
 end
+
 
 newBoard = Board.new()
 newBoard.display_board()
